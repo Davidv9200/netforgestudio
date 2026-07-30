@@ -1,26 +1,26 @@
 /* NetForge Studio - Core Design System & CSS Reset */
 :root {
-  /* Color Palette - Dark Glassmorphism */
-  --bg-dark: #090d16;
-  --bg-panel: rgba(15, 23, 42, 0.85);
-  --bg-panel-border: rgba(255, 255, 255, 0.08);
+  /* Color Palette - High Contrast Dark Theme */
+  --bg-dark: #0b0f19;
+  --bg-panel: rgba(15, 23, 42, 0.95);
+  --bg-panel-border: rgba(255, 255, 255, 0.14);
   --bg-card: #1e293b;
   --bg-card-hover: #334155;
   
   --primary: #3b82f6;
   --primary-hover: #2563eb;
-  --primary-glow: rgba(59, 130, 246, 0.35);
+  --primary-glow: rgba(59, 130, 246, 0.45);
   
-  --accent-cyan: #06b6d4;
+  --accent-cyan: #38bdf8;
   --accent-green: #10b981;
   --accent-amber: #f59e0b;
   --accent-red: #ef4444;
-  --accent-purple: #8b5cf6;
-  --accent-pink: #ec4899;
+  --accent-purple: #a855f7;
+  --accent-pink: #f43f5e;
   
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  --text-primary: #ffffff;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
   
   --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -29,7 +29,7 @@
   --sidebar-width: 280px;
   --inspector-width: 320px;
   
-  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.7), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
   --shadow-glow: 0 0 20px var(--primary-glow);
 }
 

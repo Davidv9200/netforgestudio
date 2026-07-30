@@ -104,13 +104,13 @@
 
 /* INSPECTOR SIDEBAR CONTENT */
 .selection-type-badge {
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 0.72rem;
+  font-weight: 700;
   background: var(--bg-card);
-  color: var(--text-secondary);
+  color: #38bdf8;
   padding: 3px 8px;
   border-radius: 12px;
-  border: 1px solid var(--bg-panel-border);
+  border: 1px solid rgba(56, 189, 248, 0.3);
 }
 
 .inspector-scroll {
@@ -128,7 +128,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: var(--text-muted);
+  color: #cbd5e1;
   padding: 40px 10px;
   gap: 12px;
 }
@@ -137,18 +137,18 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: rgba(15, 23, 42, 0.4);
-  padding: 12px;
+  background: rgba(15, 23, 42, 0.7);
+  padding: 14px;
   border-radius: 8px;
   border: 1px solid var(--bg-panel-border);
 }
 
 .group-title {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+  color: #38bdf8;
   border-bottom: 1px solid var(--bg-panel-border);
   padding-bottom: 6px;
 }
@@ -156,23 +156,23 @@
 .prop-row {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .prop-label {
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #cbd5e1;
 }
 
 .prop-input {
   width: 100%;
-  padding: 7px 10px;
-  background: var(--bg-card);
-  border: 1px solid var(--bg-panel-border);
+  padding: 8px 10px;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 6px;
-  color: var(--text-primary);
-  font-size: 0.85rem;
+  color: #ffffff;
+  font-size: 0.88rem;
   font-family: var(--font-main);
   outline: none;
   transition: border-color 0.2s;
@@ -180,10 +180,12 @@
 
 .prop-input.mono {
   font-family: var(--font-mono);
+  font-size: 0.85rem;
 }
 
 .prop-input:focus {
-  border-color: var(--primary);
+  border-color: #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
 }
 
 .ip-validation-warning {

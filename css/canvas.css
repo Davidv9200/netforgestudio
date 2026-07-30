@@ -45,56 +45,57 @@
 /* CABLE LINK PATHS */
 .cable-path {
   fill: none;
-  stroke-width: 2.5px;
+  stroke-width: 3px;
   cursor: pointer;
   transition: stroke 0.2s, stroke-width 0.2s;
 }
 
 .cable-path.cat6 {
-  stroke: #3b82f6;
+  stroke: #60a5fa;
 }
 
 .cable-path.fiber {
-  stroke: #10b981;
+  stroke: #34d399;
 }
 
 .cable-path.wireless {
-  stroke: #8b5cf6;
+  stroke: #c084fc;
   stroke-dasharray: 6 4;
 }
 
 .cable-path.vpn {
-  stroke: #f59e0b;
+  stroke: #fbbf24;
   stroke-dasharray: 8 4;
 }
 
 .cable-path:hover {
-  stroke-width: 4.5px;
-  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4));
+  stroke-width: 5px;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
 }
 
 .cable-path.selected {
-  stroke-width: 4px;
+  stroke-width: 4.5px;
   stroke: #38bdf8 !important;
-  filter: drop-shadow(0 0 8px #38bdf8);
+  filter: drop-shadow(0 0 10px #38bdf8);
 }
 
 .cable-label {
-  font-size: 10px;
+  font-size: 11px;
+  font-weight: 600;
   font-family: var(--font-mono);
-  fill: #94a3b8;
+  fill: #e2e8f0;
   background: var(--bg-dark);
   text-anchor: middle;
   pointer-events: none;
 }
 
 .cable-port-label {
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   font-family: var(--font-mono);
   fill: #38bdf8;
   stroke: #070a11;
-  stroke-width: 3px;
+  stroke-width: 3.5px;
   paint-order: stroke fill;
   pointer-events: none;
 }
@@ -103,14 +104,14 @@
 .temp-cable-path {
   fill: none;
   stroke: #38bdf8;
-  stroke-width: 2px;
-  stroke-dasharray: 4 4;
+  stroke-width: 2.5px;
+  stroke-dasharray: 5 4;
   pointer-events: none;
 }
 
 /* SUBNET ZONE RECTANGLES */
 .subnet-zone-rect {
-  fill-opacity: 0.08;
+  fill-opacity: 0.12;
   stroke-width: 2px;
   stroke-dasharray: 6 4;
   rx: 8px;
@@ -119,25 +120,26 @@
 }
 
 .subnet-zone-rect:hover {
-  fill-opacity: 0.15;
+  fill-opacity: 0.2;
 }
 
 .subnet-zone-rect.selected {
   stroke-width: 3px;
-  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.4));
+  filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.5));
 }
 
 .zone-label-text {
-  font-size: 12px;
-  font-weight: 600;
-  fill: #e2e8f0;
+  font-size: 13px;
+  font-weight: 700;
+  fill: #ffffff;
   pointer-events: none;
 }
 
 .zone-cidr-text {
-  font-size: 10px;
+  font-size: 11px;
+  font-weight: 600;
   font-family: var(--font-mono);
-  fill: #94a3b8;
+  fill: #cbd5e1;
   pointer-events: none;
 }
 
@@ -157,8 +159,8 @@
   position: absolute;
   width: 72px;
   height: 72px;
-  background: var(--bg-panel);
-  border: 1.5px solid var(--bg-panel-border);
+  background: #1e293b;
+  border: 2px solid rgba(255, 255, 255, 0.18);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -166,21 +168,21 @@
   justify-content: center;
   pointer-events: auto;
   cursor: move;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(8px);
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s;
 }
 
 .network-node:hover {
   border-color: var(--primary);
-  box-shadow: 0 0 15px var(--primary-glow);
+  box-shadow: 0 0 18px var(--primary-glow);
   z-index: 30;
 }
 
 .network-node.selected {
   border-color: #38bdf8;
-  border-width: 2px;
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+  border-width: 2.5px;
+  box-shadow: 0 0 22px rgba(56, 189, 248, 0.6);
   z-index: 40;
 }
 
@@ -192,6 +194,7 @@
   align-items: center;
   justify-content: center;
   margin-top: -2px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
 
 .node-icon-box svg {
@@ -200,21 +203,21 @@
 }
 
 .node-hostname-inside {
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 10.5px;
+  font-weight: 700;
   font-family: var(--font-main);
-  color: #f8fafc;
-  max-width: 64px;
+  color: #ffffff;
+  max-width: 66px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: center;
   margin-top: 2px;
   line-height: 1.1;
-  background: rgba(15, 23, 42, 0.7);
-  padding: 1px 4px;
+  background: #090d16;
+  padding: 2px 5px;
   border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   pointer-events: none;
 }
 
