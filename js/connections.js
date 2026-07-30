@@ -198,20 +198,39 @@ window.CableRenderer = {
       const sIface = findIface(sourceNode, cable.sourcePort, sSide);
       const tIface = findIface(targetNode, cable.targetPort, tSide);
 
-      const sVlan = sIface?.vlan || sourceNode.assignedVlan || 'VLAN 10';
-      const tVlan = tIface?.vlan || targetNode.assignedVlan || 'VLAN 10';
+      // Determine which interface (NIC) was most recently updated
+      const sTime = sIface?.updatedAt || 0;
+      const tTime = tIface?.updatedAt || 0;
+
+      let primaryIface = sIface;
+      let primaryNode = sourceNode;
+
+      if (tTime > sTime) {
+        primaryIface = tIface;
+        primaryNode = targetNode;
+      } else if (!sIface && tIface) {
+        primaryIface = tIface;
+        primaryNode = targetNode;
+      }
+
+      const rawVlan = primaryIface?.vlan || primaryNode?.assignedVlan || 'VLAN 10';
+      const isTrunkMode = primaryIface?.mode === 'Trunk' || rawVlan.toLowerCase().includes('trunk');
 
       let vlanLabelText = '';
       let isTrunkLink = false;
 
-      if (sIface?.mode === 'Trunk' || tIface?.mode === 'Trunk') {
+      if (isTrunkMode) {
         isTrunkLink = true;
-        const trunkInfo = sIface?.mode === 'Trunk' ? (sIface.vlan || 'Trunk') : (tIface?.vlan || 'Trunk');
-        vlanLabelText = trunkInfo.startsWith('Trunk') ? trunkInfo : `Trunk (${trunkInfo})`;
-      } else if (sVlan === tVlan) {
-        vlanLabelText = sVlan;
+        vlanLabelText = 'Trunk';
       } else {
-        vlanLabelText = `${sVlan} ↔ ${tVlan}`;
+        isTrunkLink = false;
+        let cleanTag = rawVlan.split('↔')[0].trim();
+        if (cleanTag.toLowerCase().includes('trunk')) {
+          isTrunkLink = true;
+          vlanLabelText = 'Trunk';
+        } else {
+          vlanLabelText = cleanTag || 'VLAN 10';
+        }
       }
 
       // Midpoint VLAN Tag Badge on Cable

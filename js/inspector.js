@@ -163,14 +163,13 @@ class InspectorPanel {
               ${iface.mode === 'Trunk' ? 'Allowed Trunk VLANs' : 'Assigned VLAN / Tag'}
             </label>
             <div style="display: flex; gap: 6px;">
-              <input type="text" id="iface-vlan" class="prop-input" value="${iface.vlan || (iface.mode === 'Trunk' ? 'Trunk (1,10,20)' : 'VLAN 1')}" placeholder="${iface.mode === 'Trunk' ? 'e.g. Trunk (1,10,20) or ALL' : 'e.g. VLAN 1'}" list="vlan-presets">
+              <input type="text" id="iface-vlan" class="prop-input" value="${iface.vlan || (iface.mode === 'Trunk' ? 'Trunk' : 'VLAN 10')}" placeholder="${iface.mode === 'Trunk' ? 'e.g. Trunk' : 'e.g. VLAN 10'}" list="vlan-presets">
               <datalist id="vlan-presets">
                 <option value="VLAN 1">
                 <option value="VLAN 10">
                 <option value="VLAN 20">
                 <option value="VLAN 30">
-                <option value="Trunk (1,10,20)">
-                <option value="Trunk (ALL)">
+                <option value="Trunk">
               </datalist>
               <button id="btn-quick-trunk" class="btn secondary" style="padding: 2px 8px; font-size: 0.7rem; color: #c084fc; border-color: rgba(192,132,252,0.4); white-space: nowrap;" title="Set as 802.1Q Trunk Port">
                 ${iface.mode === 'Trunk' ? '✓ Trunk' : '🔀 Trunk'}
@@ -203,22 +202,26 @@ class InspectorPanel {
       // Event listeners for interface input fields
       document.getElementById('iface-name').addEventListener('change', (e) => {
         iface.name = e.target.value;
+        iface.updatedAt = Date.now();
         window.appState.saveSnapshot();
         this.renderNodeInspector(id);
       });
       document.getElementById('iface-side').addEventListener('change', (e) => {
         iface.side = e.target.value;
+        iface.updatedAt = Date.now();
         window.appState.saveSnapshot();
         window.dispatchEvent(new CustomEvent('state-changed'));
       });
       document.getElementById('iface-ip').addEventListener('change', (e) => {
         iface.ip = e.target.value;
+        iface.updatedAt = Date.now();
         if (ifaceKey === 'top') node.ip = e.target.value;
         window.appState.saveSnapshot();
         window.dispatchEvent(new CustomEvent('state-changed'));
       });
       document.getElementById('iface-mask').addEventListener('change', (e) => {
         iface.mask = e.target.value;
+        iface.updatedAt = Date.now();
         if (ifaceKey === 'top') node.mask = e.target.value;
         window.appState.saveSnapshot();
         window.dispatchEvent(new CustomEvent('state-changed'));
@@ -226,6 +229,7 @@ class InspectorPanel {
       document.getElementById('iface-vlan').addEventListener('change', (e) => {
         const newVlan = e.target.value.trim();
         iface.vlan = newVlan;
+        iface.updatedAt = Date.now();
         if (ifaceKey === 'top' || node.assignedVlan === 'VLAN 1' || node.assignedVlan === 'Default (1)') {
           node.assignedVlan = newVlan;
         }
@@ -243,20 +247,24 @@ class InspectorPanel {
       });
       document.getElementById('iface-mode').addEventListener('change', (e) => {
         iface.mode = e.target.value;
-        if (e.target.value === 'Trunk' && (!iface.vlan || iface.vlan === 'VLAN 1')) {
-          iface.vlan = 'Trunk (1,10,20)';
+        iface.updatedAt = Date.now();
+        if (e.target.value === 'Trunk') {
+          iface.vlan = 'Trunk';
+        } else if (iface.vlan === 'Trunk') {
+          iface.vlan = 'VLAN 10';
         }
         window.appState.saveSnapshot();
         window.dispatchEvent(new CustomEvent('state-changed'));
         this.renderNodeInspector(id);
       });
       document.getElementById('btn-quick-trunk').addEventListener('click', () => {
+        iface.updatedAt = Date.now();
         if (iface.mode === 'Trunk') {
           iface.mode = 'Access';
-          iface.vlan = 'VLAN 1';
+          iface.vlan = 'VLAN 10';
         } else {
           iface.mode = 'Trunk';
-          iface.vlan = 'Trunk (1,10,20)';
+          iface.vlan = 'Trunk';
         }
         window.appState.saveSnapshot();
         window.dispatchEvent(new CustomEvent('state-changed'));
