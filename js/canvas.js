@@ -319,10 +319,15 @@ class CanvasController {
 
     window.appState.nodes.forEach(node => {
       const isNodeSelected = (window.appState.selectedNodeIds && window.appState.selectedNodeIds.includes(node.id)) || window.appState.selectedId === node.id;
+      
+      const hostnameText = node.hostname || node.name || '';
+      const dynamicWidth = Math.max(76, hostnameText.length * 8.5 + 24);
+
       const nodeEl = document.createElement('div');
       nodeEl.className = `network-node ${isNodeSelected ? 'selected' : ''}`;
       nodeEl.style.left = `${node.x}px`;
       nodeEl.style.top = `${node.y}px`;
+      nodeEl.style.width = `${dynamicWidth}px`;
       nodeEl.style.setProperty('--accent-color', node.accentColor || '#3b82f6');
       nodeEl.setAttribute('data-id', node.id);
 
@@ -353,13 +358,17 @@ class CanvasController {
         const total = list.length;
         list.forEach((iface, idx) => {
           const isOcc = this.isPortOccupied(node, iface.key) || this.isPortOccupied(node, side);
-          const posVal = Math.round((idx + 1) * (72 / (total + 1)) - 6);
           let posStyle = '';
 
-          if (side === 'top') posStyle = `top: -6px; left: ${posVal}px;`;
-          else if (side === 'bottom') posStyle = `bottom: -6px; left: ${posVal}px;`;
-          else if (side === 'left') posStyle = `left: -6px; top: ${posVal}px;`;
-          else if (side === 'right') posStyle = `right: -6px; top: ${posVal}px;`;
+          if (side === 'top' || side === 'bottom') {
+            const posVal = Math.round((idx + 1) * (dynamicWidth / (total + 1)) - 6);
+            if (side === 'top') posStyle = `top: -6px; left: ${posVal}px;`;
+            else posStyle = `bottom: -6px; left: ${posVal}px;`;
+          } else {
+            const posVal = Math.round((idx + 1) * (74 / (total + 1)) - 6);
+            if (side === 'left') posStyle = `left: -6px; top: ${posVal}px;`;
+            else posStyle = `right: -6px; top: ${posVal}px;`;
+          }
 
           const ipStr = iface.ip ? `IP: ${iface.ip}` : 'IP: None';
           const maskStr = iface.mask ? ` (${iface.mask})` : '';

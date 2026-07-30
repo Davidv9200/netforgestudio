@@ -4,8 +4,9 @@ window.CableRenderer = {
 
   // Calculate anchor point on a node given port side or interface key
   getNodePortCoords: function(node, sideOrKey = 'top', cableIndex = 0, totalOnSide = 1) {
-    const width = 72;
-    const height = 72;
+    const hostnameText = node.hostname || node.name || '';
+    const width = Math.max(76, hostnameText.length * 8.5 + 24);
+    const height = 74;
     let x = node.x;
     let y = node.y;
 
@@ -27,7 +28,9 @@ window.CableRenderer = {
     }
 
     const validSide = ['top', 'bottom', 'left', 'right'].includes(side) ? side : 'top';
-    const posVal = (idxOnSide + 1) * (width / (total + 1));
+    const posVal = ['top', 'bottom'].includes(validSide)
+      ? (idxOnSide + 1) * (width / (total + 1))
+      : (idxOnSide + 1) * (height / (total + 1));
 
     switch (validSide) {
       case 'top':
