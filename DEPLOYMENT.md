@@ -21,7 +21,7 @@ Since NetForge Studio is a client-side Single Page Application (SPA) built with 
 
 ## Phase 1: Initialize Local Git Repository
 
-Execute these commands in your project root directory (`/home/david/nettool`):
+Execute these commands in your project root directory (e.g. `/opt/netforgestudio`):
 
 ### 1.1 Create `.gitignore`
 Ensure temporary build artifacts and dependency folders are excluded from Git:

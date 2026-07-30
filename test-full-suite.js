@@ -1,7 +1,7 @@
 import { firefox } from 'playwright';
 import path from 'path';
 
-const ARTIFACT_DIR = '/home/david/.gemini/antigravity/brain/9784d9cc-a751-47cb-b84c-b81aaab0a765';
+const ARTIFACT_DIR = process.env.ARTIFACT_DIR || path.join(process.cwd(), 'artifacts');
 
 async function runTestSuite() {
   console.log('🚀 Starting NetForge Studio Full Automated Test Suite on Firefox...');
