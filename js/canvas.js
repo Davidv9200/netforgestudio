@@ -134,13 +134,8 @@ class CanvasController {
           groupIds.forEach(id => {
             const initialPos = this.dragGroupInitialPositions[id];
             if (initialPos) {
-              let targetX = initialPos.x + deltaX;
-              let targetY = initialPos.y + deltaY;
-
-              const nodeObj = window.appState.getNodeById(id);
-              const minYLimit = (nodeObj && nodeObj.site) ? 44 : 12;
-              targetX = Math.max(10, targetX);
-              targetY = Math.max(minYLimit, targetY);
+              const targetX = initialPos.x + deltaX;
+              const targetY = initialPos.y + deltaY;
 
               window.appState.updateNodePosition(id, targetX, targetY);
               const currN = window.appState.getNodeById(id);
@@ -528,8 +523,8 @@ class CanvasController {
 
       const padX = 28;
       const padY = 32;
-      const x = Math.max(10, minX - padX);
-      const y = Math.max(18, minY - padY);
+      const x = minX - padX;
+      const y = minY - padY;
       const w = Math.max(180, (maxX - minX) + padX * 2);
       const h = Math.max(140, (maxY - minY) + padY * 2);
 
@@ -553,7 +548,7 @@ class CanvasController {
       g.appendChild(rect);
 
       // Site Header Label Badge
-      const badgeY = Math.max(6, y - 11);
+      const badgeY = y - 11;
       const badgeTextStr = `📍 ${siteName} (${nodes.length} ${nodes.length === 1 ? 'Device' : 'Devices'})`;
       const badgeW = Math.min(w - 20, Math.max(160, siteName.length * 8 + 60));
       const badgeRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
