@@ -20,12 +20,48 @@ NetForge Studio is an interactive, web-based network design, topology diagrammin
   4. Hybrid Cloud VPN Network
 - **Export & Reporting**: Export to scalable vector `.svg`, high-resolution `.png`, JSON project files, and Bill of Materials (BOM) inventory table.
 
-## Running Locally
-
-To start the local web dev server:
+## Running Locally & Development
 
 ```bash
-python3 -m http.server 8000
+# 1. Install dependencies
+npm install
+
+# 2. Start Vite development server (interactive UI on port 5173)
+npm run dev
+
+# 3. Build production bundle (generates dist/)
+npm run build
+
+# 4. Start production Express backend (serves app & project storage API on port 80/PORT)
+npm start
 ```
 
-Then open your browser to `http://localhost:8000`.
+---
+
+## Deployment Quick Start
+
+For detailed step-by-step guides, refer to the **[Deployment Runbook & Knowledge Base (DEPLOYMENT.md)](file:///home/david/Documents/Projects/netforgestudio/netforgestudio/DEPLOYMENT.md)**.
+
+### Option 1: Automated Server Deployment (Ubuntu / Debian / CentOS)
+Run the automated deployment script on your Linux VPS / server:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/netforgestudio/main/setup-server.sh | bash
+```
+
+### Option 2: Docker Container Deployment
+```bash
+# Build Docker image
+docker build -t netforge-studio .
+
+# Launch container with persistent volume on Port 80
+docker run -d \
+  --name netforge-app \
+  --restart always \
+  -p 80:80 \
+  -v /opt/netforgestudio/data:/app/data \
+  netforge-studio
+```
+
+### Option 3: GitHub Pages / Vercel / Netlify / Nginx
+NetForge Studio compiles into pure static assets (`dist/`) and can be hosted on GitHub Pages, Vercel, Netlify, or Nginx. Full CI/CD workflow examples are available in **[DEPLOYMENT.md](file:///home/david/Documents/Projects/netforgestudio/netforgestudio/DEPLOYMENT.md)**.
