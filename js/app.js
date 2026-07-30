@@ -7,10 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
   window.initInspector();
   window.initSimulator();
 
-  // Load saved state from LocalStorage if available, otherwise load default template
+  // Load saved state from LocalStorage if available, otherwise initialize a blank canvas
   const restored = window.appState.loadFromLocalStorage();
   if (!restored) {
-    window.TemplateRegistry.loadTemplate('enterprise_dmz');
+    window.appState.loadTopology({ nodes: [], cables: [], zones: [] });
   }
 
   // Wire toolbar action buttons
