@@ -134,8 +134,14 @@ class CanvasController {
           groupIds.forEach(id => {
             const initialPos = this.dragGroupInitialPositions[id];
             if (initialPos) {
-              const targetX = initialPos.x + deltaX;
-              const targetY = initialPos.y + deltaY;
+              let targetX = initialPos.x + deltaX;
+              let targetY = initialPos.y + deltaY;
+
+              const nodeObj = window.appState.getNodeById(id);
+              const minYLimit = (nodeObj && nodeObj.site) ? 44 : 12;
+              targetX = Math.max(10, targetX);
+              targetY = Math.max(minYLimit, targetY);
+
               window.appState.updateNodePosition(id, targetX, targetY);
               const currN = window.appState.getNodeById(id);
               const nEl = this.nodesLayer.querySelector(`[data-id="${id}"]`);
@@ -522,8 +528,8 @@ class CanvasController {
 
       const padX = 28;
       const padY = 32;
-      const x = minX - padX;
-      const y = minY - padY;
+      const x = Math.max(10, minX - padX);
+      const y = Math.max(18, minY - padY);
       const w = Math.max(180, (maxX - minX) + padX * 2);
       const h = Math.max(140, (maxY - minY) + padY * 2);
 
@@ -547,11 +553,12 @@ class CanvasController {
       g.appendChild(rect);
 
       // Site Header Label Badge
+      const badgeY = Math.max(6, y - 11);
       const badgeTextStr = `📍 ${siteName} (${nodes.length} ${nodes.length === 1 ? 'Device' : 'Devices'})`;
       const badgeW = Math.min(w - 20, Math.max(160, siteName.length * 8 + 60));
       const badgeRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
       badgeRect.setAttribute('x', x + 14);
-      badgeRect.setAttribute('y', y - 11);
+      badgeRect.setAttribute('y', badgeY);
       badgeRect.setAttribute('width', badgeW);
       badgeRect.setAttribute('height', 22);
       badgeRect.setAttribute('rx', '6');
@@ -561,7 +568,7 @@ class CanvasController {
 
       const badgeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       badgeText.setAttribute('x', x + 22);
-      badgeText.setAttribute('y', y + 4);
+      badgeText.setAttribute('y', badgeY + 15);
       badgeText.setAttribute('fill', '#ffffff');
       badgeText.setAttribute('font-size', '10.5');
       badgeText.setAttribute('font-weight', '700');
