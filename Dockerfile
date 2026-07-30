@@ -7,8 +7,21 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# Stage 2: Serve static files using Nginx Alpine
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
+# Stage 2: Express Production Backend + Persistent Data Storage
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=80
+
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY --from=build /app/dist ./dist
+COPY server.js ./
+
+# Create data directory for volume mounting
+RUN mkdir -p /app/data/projects
+
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["node", "server.js"]

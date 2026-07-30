@@ -92,12 +92,17 @@ if [ $($DOCKER_CMD ps -aq -f name=^/${CONTAINER_NAME}$) ]; then
     $DOCKER_CMD rm "$CONTAINER_NAME" || true
 fi
 
+# Prepare data directory for persistent project storage
+sudo mkdir -p /opt/netforgestudio/data
+sudo chown -R $USER:$USER /opt/netforgestudio/data
+
 # 5. Run the new container
-echo "▶️ Launching container on port $PORT..."
+echo "▶️ Launching container on port $PORT with persistent data volume..."
 $DOCKER_CMD run -d \
     --name "$CONTAINER_NAME" \
     --restart always \
     -p "$PORT":80 \
+    -v /opt/netforgestudio/data:/app/data \
     netforge-studio:latest
 
 # 6. Create quick update script for future deployments
@@ -116,7 +121,7 @@ fi
 $DOCKER_CMD build -t netforge-studio:latest .
 $DOCKER_CMD stop netforge-studio-app || true
 $DOCKER_CMD rm netforge-studio-app || true
-$DOCKER_CMD run -d --name netforge-studio-app --restart always -p 80:80 netforge-studio:latest
+$DOCKER_CMD run -d --name netforge-studio-app --restart always -p 80:80 -v /opt/netforgestudio/data:/app/data netforge-studio:latest
 echo "✅ Update complete! NetForge Studio is running."
 EOF
 
