@@ -321,7 +321,7 @@ class CanvasController {
       const isNodeSelected = (window.appState.selectedNodeIds && window.appState.selectedNodeIds.includes(node.id)) || window.appState.selectedId === node.id;
       
       const hostnameText = node.hostname || node.name || '';
-      const dynamicWidth = Math.max(76, hostnameText.length * 8.5 + 24);
+      const dynamicWidth = Math.max(84, hostnameText.length * 8.5 + 28);
 
       const nodeEl = document.createElement('div');
       nodeEl.className = `network-node ${isNodeSelected ? 'selected' : ''}`;
@@ -365,7 +365,7 @@ class CanvasController {
             if (side === 'top') posStyle = `top: -6px; left: ${posVal}px;`;
             else posStyle = `bottom: -6px; left: ${posVal}px;`;
           } else {
-            const posVal = Math.round((idx + 1) * (74 / (total + 1)) - 6);
+            const posVal = Math.round((idx + 1) * (80 / (total + 1)) - 6);
             if (side === 'left') posStyle = `left: -6px; top: ${posVal}px;`;
             else posStyle = `right: -6px; top: ${posVal}px;`;
           }
@@ -513,18 +513,19 @@ class CanvasController {
       let maxY = -Infinity;
 
       nodes.forEach(n => {
+        const nWidth = Math.max(84, (n.hostname || n.name || '').length * 8.5 + 28);
         minX = Math.min(minX, n.x);
         minY = Math.min(minY, n.y);
-        maxX = Math.max(maxX, n.x + 72);
-        maxY = Math.max(maxY, n.y + 72);
+        maxX = Math.max(maxX, n.x + nWidth);
+        maxY = Math.max(maxY, n.y + 80);
       });
 
-      const padX = 24;
-      const padY = 28;
+      const padX = 28;
+      const padY = 32;
       const x = minX - padX;
       const y = minY - padY;
-      const w = Math.max(160, (maxX - minX) + padX * 2);
-      const h = Math.max(120, (maxY - minY) + padY * 2);
+      const w = Math.max(180, (maxX - minX) + padX * 2);
+      const h = Math.max(140, (maxY - minY) + padY * 2);
 
       const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       g.setAttribute('class', 'site-group-container');
@@ -538,34 +539,35 @@ class CanvasController {
       rect.setAttribute('height', h);
       rect.setAttribute('rx', '14');
       rect.setAttribute('fill', color);
-      rect.setAttribute('fill-opacity', '0.04');
+      rect.setAttribute('fill-opacity', '0.05');
       rect.setAttribute('stroke', color);
-      rect.setAttribute('stroke-width', '1.5');
-      rect.setAttribute('stroke-dasharray', '5 4');
+      rect.setAttribute('stroke-width', '1.8');
+      rect.setAttribute('stroke-dasharray', '6 4');
       rect.style.pointerEvents = 'none';
       g.appendChild(rect);
 
       // Site Header Label Badge
-      const badgeW = Math.min(w - 16, Math.max(140, siteName.length * 8 + 40));
+      const badgeTextStr = `📍 ${siteName} (${nodes.length} ${nodes.length === 1 ? 'Device' : 'Devices'})`;
+      const badgeW = Math.min(w - 20, Math.max(160, siteName.length * 8 + 60));
       const badgeRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      badgeRect.setAttribute('x', x + 12);
-      badgeRect.setAttribute('y', y - 12);
+      badgeRect.setAttribute('x', x + 14);
+      badgeRect.setAttribute('y', y - 11);
       badgeRect.setAttribute('width', badgeW);
-      badgeRect.setAttribute('height', 24);
+      badgeRect.setAttribute('height', 22);
       badgeRect.setAttribute('rx', '6');
       badgeRect.setAttribute('fill', color);
       badgeRect.style.pointerEvents = 'none';
       g.appendChild(badgeRect);
 
       const badgeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      badgeText.setAttribute('x', x + 20);
+      badgeText.setAttribute('x', x + 22);
       badgeText.setAttribute('y', y + 4);
       badgeText.setAttribute('fill', '#ffffff');
-      badgeText.setAttribute('font-size', '11');
-      badgeText.setAttribute('font-weight', '600');
+      badgeText.setAttribute('font-size', '10.5');
+      badgeText.setAttribute('font-weight', '700');
       badgeText.setAttribute('font-family', 'sans-serif');
       badgeText.style.pointerEvents = 'none';
-      badgeText.textContent = `📍 ${siteName} (${nodes.length} ${nodes.length === 1 ? 'Device' : 'Devices'})`;
+      badgeText.textContent = badgeTextStr;
       g.appendChild(badgeText);
 
       this.sitesGroup.appendChild(g);
