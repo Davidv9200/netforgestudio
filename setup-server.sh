@@ -2,7 +2,7 @@
 # ==============================================================================
 # NetForge Studio — Server Setup & Docker Deployment (SSH Deploy Key Method)
 # Target OS: Ubuntu / Debian / Fedora / CentOS
-# Repository: git@github.com:YOUR_GITHUB_USER/netforgestudio.git
+# Repository: https://github.com/YOUR_GITHUB_USER/netforgestudio.git
 # Usage: curl -sSL https://raw.githubusercontent.com/YOUR_GITHUB_USER/netforgestudio/main/setup-server.sh | bash
 # ==============================================================================
 
@@ -10,13 +10,13 @@ set -e
 
 GITHUB_USER="${GITHUB_USER:-YOUR_GITHUB_USER}"
 REPO_NAME="${REPO_NAME:-netforgestudio}"
-REPO_URL="git@github.com:${GITHUB_USER}/${REPO_NAME}.git"
+REPO_URL="https://github.com/${GITHUB_USER}/${REPO_NAME}.git"
 INSTALL_DIR="/opt/netforgestudio"
 CONTAINER_NAME="netforge-studio-app"
 PORT=80
 SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo "🚀 Starting NetForge Studio Deployment Setup (Method 1: SSH Deploy Key)..."
+echo "🚀 Starting NetForge Studio Deployment Setup..."
 
 # 1. Install prerequisites (Git & Docker)
 echo "📦 Checking dependencies..."
@@ -37,14 +37,6 @@ if ! command -v docker &> /dev/null; then
     sudo usermod -aG docker $USER || true
 fi
 
-# Ensure SSH host key for github.com is recognized
-mkdir -p ~/.ssh
-chmod 700 ~/.ssh
-if ! grep -q "github.com" ~/.ssh/known_hosts 2>/dev/null; then
-    echo "🔑 Adding github.com to known_hosts..."
-    ssh-keyscan -t ed25519,rsa github.com >> ~/.ssh/known_hosts 2>/dev/null || true
-fi
-
 # Prepare target installation directory with proper user permissions
 echo "📁 Ensuring directory permissions for $INSTALL_DIR..."
 sudo mkdir -p "$INSTALL_DIR"
@@ -52,13 +44,10 @@ sudo chown -R $USER:$USER "$INSTALL_DIR"
 
 # 2. Clone or pull latest repository
 if [ ! -d "$INSTALL_DIR/.git" ]; then
-    echo "📥 Cloning private repository from $REPO_URL to $INSTALL_DIR..."
+    echo "📥 Cloning repository from $REPO_URL to $INSTALL_DIR..."
     git clone "$REPO_URL" "$INSTALL_DIR" || {
         echo ""
-        echo "❌ Error cloning repository!"
-        echo "Please make sure you generated an SSH key on this server and added it as a Deploy Key in GitHub:"
-        echo "1. Run: cat ~/.ssh/id_ed25519.pub"
-        echo "2. Add to: https://github.com/${GITHUB_USER}/${REPO_NAME} -> Settings -> Deploy keys"
+        echo "❌ Error cloning repository from $REPO_URL!"
         exit 1
     }
 else
