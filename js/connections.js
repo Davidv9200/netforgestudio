@@ -183,16 +183,20 @@ window.CableRenderer = {
 
       // Derive VLAN tag for source interface & target interface
       const findIface = (node, portName, side) => {
-        if (!node.interfaces) return null;
+        if (!node || !node.interfaces) return null;
+        let found = Object.values(node.interfaces).find(i => i.name === portName);
+        if (found) return found;
+        if (node.interfaces[portName]) return node.interfaces[portName];
         if (node.interfaces[side]) return node.interfaces[side];
-        return Object.values(node.interfaces).find(i => i.name === portName || i.side === side);
+        found = Object.values(node.interfaces).find(i => i.side === side);
+        return found || null;
       };
 
       const sIface = findIface(sourceNode, cable.sourcePort, sSide);
       const tIface = findIface(targetNode, cable.targetPort, tSide);
 
-      const sVlan = sIface?.vlan || sourceNode.assignedVlan || 'VLAN 1';
-      const tVlan = tIface?.vlan || targetNode.assignedVlan || 'VLAN 1';
+      const sVlan = sIface?.vlan || sourceNode.assignedVlan || 'VLAN 10';
+      const tVlan = tIface?.vlan || targetNode.assignedVlan || 'VLAN 10';
 
       let vlanLabelText = '';
       let isTrunkLink = false;
@@ -214,13 +218,14 @@ window.CableRenderer = {
       const tagGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       tagGroup.setAttribute('class', `cable-vlan-tag ${isTrunkLink ? 'trunk-link' : ''}`);
       
-      const badgeW = Math.max(54, vlanLabelText.length * 6.5 + 24);
-      const badgeH = 18;
+      const badgeW = Math.max(68, vlanLabelText.length * 7.5 + 28);
+      const badgeH = 22;
       const bx = mx - badgeW / 2;
       const by = my - badgeH / 2;
 
-      const strokeColor = isTrunkLink ? '#a855f7' : '#0284c7';
-      const textColor = isTrunkLink ? '#c084fc' : '#38bdf8';
+      const bgColor = '#0f172a';
+      const strokeColor = isTrunkLink ? '#c084fc' : '#38bdf8';
+      const textColor = isTrunkLink ? '#e9d5ff' : '#ffffff';
       const icon = isTrunkLink ? '🔀 ' : '🏷️ ';
 
       const tagRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -228,21 +233,23 @@ window.CableRenderer = {
       tagRect.setAttribute('y', by);
       tagRect.setAttribute('width', badgeW);
       tagRect.setAttribute('height', badgeH);
-      tagRect.setAttribute('rx', '4');
-      tagRect.setAttribute('fill', '#070a11');
+      tagRect.setAttribute('rx', '6');
+      tagRect.setAttribute('fill', bgColor);
       tagRect.setAttribute('stroke', strokeColor);
-      tagRect.setAttribute('stroke-width', '1.5');
+      tagRect.setAttribute('stroke-width', '2');
       tagGroup.appendChild(tagRect);
 
       const tagText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       tagText.setAttribute('x', mx);
-      tagText.setAttribute('y', my + 3.5);
+      tagText.setAttribute('y', my + 4);
       tagText.setAttribute('text-anchor', 'middle');
       tagText.setAttribute('fill', textColor);
-      tagText.setAttribute('font-size', '9.5');
-      tagText.setAttribute('font-weight', '600');
-      tagText.setAttribute('font-family', 'JetBrains Mono, sans-serif');
+      tagText.setAttribute('font-size', '11');
+      tagText.setAttribute('font-weight', '700');
+      tagText.setAttribute('font-family', 'Inter, system-ui, sans-serif');
       tagText.textContent = `${icon}${vlanLabelText}`;
+      tagGroup.appendChild(tagText);
+
       if (!window.appState || window.appState.showVlanBadges !== false) {
         g.appendChild(tagGroup);
       }

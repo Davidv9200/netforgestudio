@@ -204,6 +204,7 @@ class CanvasController {
         window.appState.showVlanBadges = !window.appState.showVlanBadges;
         toggleVlansBtn.classList.toggle('active', window.appState.showVlanBadges);
         this.renderNodes();
+        this.renderCables();
       });
     }
 
@@ -362,8 +363,9 @@ class CanvasController {
 
           const ipStr = iface.ip ? `IP: ${iface.ip}` : 'IP: None';
           const maskStr = iface.mask ? ` (${iface.mask})` : '';
+          const vlanStr = iface.vlan ? ` | ${iface.vlan}` : '';
           const statusStr = isOcc ? ' [CONNECTED]' : ' (Free)';
-          const portTitle = `Interface: ${iface.name}\n${ipStr}${maskStr}\nMode: ${iface.mode || 'Access'}${statusStr}`;
+          const portTitle = `Interface: ${iface.name}\n${ipStr}${maskStr}${vlanStr}\nMode: ${iface.mode || 'Access'}${statusStr}`;
 
           portDotsHtml += `<div class="node-port-dot ${side} ${isOcc ? 'occupied' : ''}" data-port="${iface.key}" data-side="${side}" style="${posStyle}" title="${portTitle}"></div>`;
         });
