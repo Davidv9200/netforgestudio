@@ -4,9 +4,13 @@ window.CableRenderer = {
 
   // Calculate anchor point on a node given port side or interface key
   getNodePortCoords: function(node, sideOrKey = 'top', cableIndex = 0, totalOnSide = 1) {
+    const def = window.DeviceRegistry ? window.DeviceRegistry.getDeviceDef(node.type) : {};
     const hostnameText = node.hostname || node.name || '';
-    const width = Math.max(84, hostnameText.length * 8.5 + 28);
-    const height = 80;
+    const typeStr = def.name || '';
+    const primaryIp = node.ip || (node.interfaces?.top?.ip) || (node.interfaces && Object.values(node.interfaces)[0]?.ip) || '';
+    const maxLen = Math.max(hostnameText.length, typeStr.length, primaryIp.length);
+    const width = Math.max(110, maxLen * 8.2 + 42);
+    const height = 84;
     let x = node.x;
     let y = node.y;
 

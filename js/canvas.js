@@ -320,9 +320,13 @@ class CanvasController {
 
     window.appState.nodes.forEach(node => {
       const isNodeSelected = (window.appState.selectedNodeIds && window.appState.selectedNodeIds.includes(node.id)) || window.appState.selectedId === node.id;
+      const def = window.DeviceRegistry.getDeviceDef(node.type);
       
+      const primaryIp = node.ip || (node.interfaces?.top?.ip) || (node.interfaces && Object.values(node.interfaces)[0]?.ip) || '';
       const hostnameText = node.hostname || node.name || '';
-      const dynamicWidth = Math.max(84, hostnameText.length * 8.5 + 28);
+      const typeStr = def.name || '';
+      const maxLen = Math.max(hostnameText.length, typeStr.length, primaryIp ? primaryIp.length + 3 : 0);
+      const dynamicWidth = Math.max(110, maxLen * 8.2 + 42);
 
       const nodeEl = document.createElement('div');
       nodeEl.className = `network-node ${isNodeSelected ? 'selected' : ''}`;
@@ -331,8 +335,6 @@ class CanvasController {
       nodeEl.style.width = `${dynamicWidth}px`;
       nodeEl.style.setProperty('--accent-color', node.accentColor || '#3b82f6');
       nodeEl.setAttribute('data-id', node.id);
-
-      const def = window.DeviceRegistry.getDeviceDef(node.type);
 
       // Ensure default interfaces dictionary exists
       if (!node.interfaces) {
@@ -366,7 +368,7 @@ class CanvasController {
             if (side === 'top') posStyle = `top: -6px; left: ${posVal}px;`;
             else posStyle = `bottom: -6px; left: ${posVal}px;`;
           } else {
-            const posVal = Math.round((idx + 1) * (80 / (total + 1)) - 6);
+            const posVal = Math.round((idx + 1) * (84 / (total + 1)) - 6);
             if (side === 'left') posStyle = `left: -6px; top: ${posVal}px;`;
             else posStyle = `right: -6px; top: ${posVal}px;`;
           }
@@ -382,9 +384,17 @@ class CanvasController {
       });
 
       nodeEl.innerHTML = `
-        <div class="node-icon-box">${def.iconSvg}</div>
-        <div class="node-hostname-inside" title="${node.hostname}">${node.hostname}</div>
-        <div class="node-status-badge ${node.status || 'online'}"></div>
+        <div class="node-header">
+          <span class="node-type-pill" style="border-color: rgba(255,255,255,0.18); color: ${node.accentColor || '#38bdf8'}">${def.name}</span>
+        </div>
+        <div class="node-main-content">
+          <div class="node-icon-box">${def.iconSvg}</div>
+          <div class="node-info-stack">
+            <div class="node-hostname-text" title="${node.hostname}">${node.hostname}</div>
+            ${primaryIp ? `<div class="node-ip-text">${primaryIp}</div>` : ''}
+          </div>
+        </div>
+        <div class="node-status-badge ${node.status || 'online'}" title="Status: ${node.status || 'online'}"></div>
         ${portDotsHtml}
       `;
 
@@ -514,11 +524,14 @@ class CanvasController {
       let maxY = -Infinity;
 
       nodes.forEach(n => {
-        const nWidth = Math.max(84, (n.hostname || n.name || '').length * 8.5 + 28);
+        const def = window.DeviceRegistry ? window.DeviceRegistry.getDeviceDef(n.type) : {};
+        const primaryIp = n.ip || (n.interfaces?.top?.ip) || (n.interfaces && Object.values(n.interfaces)[0]?.ip) || '';
+        const maxLen = Math.max((n.hostname || n.name || '').length, (def.name || '').length, primaryIp ? primaryIp.length + 3 : 0);
+        const nWidth = Math.max(110, maxLen * 8.2 + 42);
         minX = Math.min(minX, n.x);
         minY = Math.min(minY, n.y);
         maxX = Math.max(maxX, n.x + nWidth);
-        maxY = Math.max(maxY, n.y + 80);
+        maxY = Math.max(maxY, n.y + 84);
       });
 
       const padX = 28;
