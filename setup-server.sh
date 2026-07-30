@@ -3,6 +3,7 @@
 # NetForge Studio — Server Setup & Docker Deployment (SSH Deploy Key Method)
 # Target OS: Ubuntu / Debian / Fedora / CentOS
 # Repository: git@github.com:Davidv9200/netforgestudio.git
+# Usage: curl -sSL https://raw.githubusercontent.com/Davidv9200/netforgestudio/main/setup-server.sh | bash
 # ==============================================================================
 
 set -e
@@ -13,7 +14,7 @@ REPO_URL="git@github.com:${GITHUB_USER}/${REPO_NAME}.git"
 INSTALL_DIR="/opt/netforgestudio"
 CONTAINER_NAME="netforge-studio-app"
 PORT=80
-SOURCE_DIR="$(pwd)"
+SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo "🚀 Starting NetForge Studio Deployment Setup (Method 1: SSH Deploy Key)..."
 
@@ -86,7 +87,7 @@ echo "🔨 Building Docker image using $DOCKER_CMD..."
 $DOCKER_CMD build -t netforge-studio:latest .
 
 # 4. Stop and remove existing container if running
-if [ $($DOCKER_CMD ps -aq -f name=^/${CONTAINER_NAME}$) ]; then
+if [ -n "$($DOCKER_CMD ps -aq -f name=^/${CONTAINER_NAME}$)" ]; then
     echo "🛑 Stopping existing container..."
     $DOCKER_CMD stop "$CONTAINER_NAME" || true
     $DOCKER_CMD rm "$CONTAINER_NAME" || true
