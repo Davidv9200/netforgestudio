@@ -362,45 +362,16 @@ class CanvasController {
 
           const ipStr = iface.ip ? `IP: ${iface.ip}` : 'IP: None';
           const maskStr = iface.mask ? ` (${iface.mask})` : '';
-          const vlanStr = iface.vlan ? ` | ${iface.vlan}` : '';
           const statusStr = isOcc ? ' [CONNECTED]' : ' (Free)';
-          const portTitle = `Interface: ${iface.name}\n${ipStr}${maskStr}${vlanStr}\nMode: ${iface.mode || 'Access'}${statusStr}`;
+          const portTitle = `Interface: ${iface.name}\n${ipStr}${maskStr}\nMode: ${iface.mode || 'Access'}${statusStr}`;
 
           portDotsHtml += `<div class="node-port-dot ${side} ${isOcc ? 'occupied' : ''}" data-port="${iface.key}" data-side="${side}" style="${posStyle}" title="${portTitle}"></div>`;
         });
       });
 
-      // Collect unique VLANs across all interfaces of this node
-      let nodeVlans = Array.from(new Set(
-        Object.values(node.interfaces || {})
-          .map(i => i.vlan)
-          .filter(Boolean)
-      ));
-
-      // Remove default VLAN 1 if custom non-default VLANs are configured
-      if (nodeVlans.length > 1 && nodeVlans.some(v => v !== 'VLAN 1' && v !== 'Default (1)')) {
-        nodeVlans = nodeVlans.filter(v => v !== 'VLAN 1' && v !== 'Default (1)');
-      }
-      
-      const vlanDisplayStr = nodeVlans.length > 0 
-        ? nodeVlans.map(v => v.replace(/^VLAN\s*/i, 'V')).join('/') 
-        : (node.assignedVlan ? node.assignedVlan.replace(/^VLAN\s*/i, 'V') : 'V1');
-      
-      const vlanFullStr = nodeVlans.length > 0 ? nodeVlans.join(', ') : (node.assignedVlan || 'VLAN 1');
-
-      // Only display VLAN tag badge if device has active cable connections
-      const isConnected = window.appState.cables.some(
-        c => c.sourceId === node.id || c.targetId === node.id
-      );
-
-      const vlanTagHtml = (window.appState.showVlanBadges && isConnected) 
-        ? `<div class="node-vlan-tag" title="VLAN Membership: ${vlanFullStr}">🏷️ ${vlanDisplayStr}</div>` 
-        : '';
-
       nodeEl.innerHTML = `
         <div class="node-icon-box">${def.iconSvg}</div>
         <div class="node-hostname-inside" title="${node.hostname}">${node.hostname}</div>
-        ${vlanTagHtml}
         <div class="node-status-badge ${node.status || 'online'}"></div>
         ${portDotsHtml}
       `;

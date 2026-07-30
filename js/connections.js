@@ -243,9 +243,9 @@ window.CableRenderer = {
       tagText.setAttribute('font-weight', '600');
       tagText.setAttribute('font-family', 'JetBrains Mono, sans-serif');
       tagText.textContent = `${icon}${vlanLabelText}`;
-      tagGroup.appendChild(tagText);
-
-      g.appendChild(tagGroup);
+      if (!window.appState || window.appState.showVlanBadges !== false) {
+        g.appendChild(tagGroup);
+      }
 
       pathEl.addEventListener('click', (e) => {
         e.stopPropagation();
