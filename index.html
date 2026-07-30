@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NetForge Studio - Interactive Network Topology Editor</title>
+  <meta name="description" content="Professional web-based interactive network topology diagram builder, subnet manager, and traffic simulator.">
+  
+  <!-- Font import for modern aesthetics -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/canvas.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+</head>
+<body class="dark-theme">
+
+  <div id="app" class="app-container">
+    
+    <!-- TOP TOOLBAR -->
+    <header class="top-toolbar">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="2" width="8" height="8" rx="2"/>
+            <rect x="14" y="2" width="8" height="8" rx="2"/>
+            <rect x="8" y="14" width="8" height="8" rx="2"/>
+            <path d="M6 10v2a2 2 0 002 2h8a2 2 0 002-2v-2"/>
+            <path d="M12 14v-2"/>
+          </svg>
+        </div>
+        <span class="brand-title">NetForge <span class="accent-text">Studio</span></span>
+        <span class="version-badge">v2.4 Pro</span>
+      </div>
+
+      <div class="toolbar-section left">
+        <button id="btn-new" class="tool-btn" title="New Topology Diagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+          <span>New</span>
+        </button>
+
+        <button id="btn-templates" class="tool-btn highlight" title="Choose Built-In Network Template">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          <span>Templates</span>
+        </button>
+
+        <div class="divider"></div>
+
+        <button id="btn-undo" class="tool-btn" title="Undo (Ctrl+Z)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/></svg>
+        </button>
+        <button id="btn-redo" class="tool-btn" title="Redo (Ctrl+Y)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 019-9 9 9 0 016 2.3l3 2.7"/></svg>
+        </button>
+
+        <div class="divider"></div>
+
+        <button id="btn-cable-mode" class="tool-btn toggle-active" title="Cable Wire Tool (Click node port to link)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          <span>Cable Link</span>
+        </button>
+
+        <div class="select-wrapper">
+          <select id="select-cable-type" class="tool-select" title="Cable Media Type">
+            <option value="cat6">Cat6 Ethernet (10G)</option>
+            <option value="fiber">Fiber Optic (100G)</option>
+            <option value="wireless">Wireless / 5G Link</option>
+            <option value="vpn">VPN IPsec Tunnel</option>
+          </select>
+        </div>
+
+        <div class="select-wrapper">
+          <select id="select-cable-style" class="tool-select" title="Cable Routing Curve">
+            <option value="bezier">Curved (Bezier)</option>
+            <option value="orthogonal">Right-Angle (Orthogonal)</option>
+            <option value="straight">Direct Straight</option>
+          </select>
+        </div>
+
+        <div class="divider"></div>
+
+        <button id="btn-snap-grid" class="tool-btn active" title="Toggle Snap to Grid">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Snap Grid</span>
+        </button>
+
+        <div class="dropdown">
+          <button id="btn-sites-menu" class="tool-btn" title="Site Management & Location Options">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Sites ▾</span>
+          </button>
+          <div class="dropdown-content" style="min-width: 190px;">
+            <a href="#" id="btn-site-manager">⚙️ Manage Sites & Colors...</a>
+            <a href="#" id="btn-toggle-sites" class="active">👁️ Toggle Site Boundaries</a>
+          </div>
+        </div>
+
+        <button id="btn-toggle-vlans" class="tool-btn active" title="Toggle VLAN Tag Badges on Canvas">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <span>VLAN Badges</span>
+        </button>
+      </div>
+
+      <div class="toolbar-section right">
+        <button id="btn-simulate" class="tool-btn pulse-glow" title="Run Packet Simulation Test">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>Simulate Traffic</span>
+        </button>
+
+        <button id="btn-bom" class="tool-btn" title="View IP Inventory & Bill of Materials">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>BOM / IP Table</span>
+        </button>
+
+        <div class="divider"></div>
+
+        <button id="btn-save-json" class="tool-btn" title="Export Topology File (.json)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          <span>Save</span>
+        </button>
+
+        <button id="btn-load-json" class="tool-btn" title="Load Topology File (.json)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span>Load</span>
+        </button>
+        <input type="file" id="file-input-json" accept=".json" style="display:none">
+
+        <div class="dropdown">
+          <button id="btn-export-menu" class="tool-btn accent" title="Export Diagram Image">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Export</span>
+          </button>
+          <div class="dropdown-content">
+            <a href="#" id="export-png">Export High-Res PNG Image</a>
+            <a href="#" id="export-svg">Export Scalable SVG Vector</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="main-body">
+      
+      <!-- LEFT SIDEBAR: DEVICE PALETTE -->
+      <aside class="sidebar left-sidebar">
+        <div class="sidebar-header">
+          <h3>Component Library</h3>
+          <div class="search-box">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="library-search" placeholder="Search devices...">
+          </div>
+        </div>
+
+        <div class="library-scroll">
+          
+          <!-- Category 1: Network Infrastructure -->
+          <div class="library-category">
+            <div class="category-title">
+              <span>Network Infrastructure</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="category-items">
+              <div class="palette-item" draggable="true" data-type="router">
+                <div class="item-icon-wrapper" style="--accent-color: #3b82f6;">
+                  <svg class="item-icon" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M12 20h16M20 12v16M14 14l12 12M14 26l12-12" stroke="currentColor" stroke-width="2"/></svg>
+                </div>
+                <div class="item-details">
+                  <span class="item-name">Edge Router</span>
+                  <span class="item-desc">L3 Gateway & Routing</span>
+                </div>
+              </div>
+
+              <div class="palette-item" draggable="true" data-type="switch_l3">
+                <div class="item-icon-wrapper" style="--accent-color: #06b6d4;">
+                  <svg class="item-icon" viewBox="0 0 40 40"><rect x="6" y="10" width="28" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M12 16h16M12 24h16M16 13l-4 3 4 3M24 21l4 3-4 3" stroke="currentColor" stroke-width="2"/></svg>
+                </div>
+                <div class="item-details">
+                  <span class="item-name">L3 Core Switch</span>
+                  <span class="item-desc">Multilayer Switch</span>
+                </div>
+              </div>
+
+              <div class="palette-item" draggable="true" data-type="switch_l2">
+                <div class="item-icon-wrapper" style="--accent-color: #0ea5e9;">
+                  <svg class="item-icon" viewBox="0 0 40 40"><rect x="6" y="12" width="28" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="12" cy="20" r="2" fill="currentColor"/><circle cx="20" cy="20" r="2" fill="currentColor"/><circle cx="28" cy="20" r="2" fill="currentColor"/></svg>
+                </div>
+                <div class="item-details">
+                  <span class="item-name">L2 Managed Switch</span>
+                  <span class="item-desc">Access / Distribution Switch</span>
+                </div>
+              </div>
+
+              <div class="palette-item" draggable="true" data-type="firewall">
+                <div class="item-icon-wrapper" style="--accent-color: #ef4444;">
+                  <svg class="item-icon" viewBox="0 0 40 40"><path d="M20 4L6 10v10c0 9 6 15 14 17 8-2 14-8 14-17V10L20 4z" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M13 16h14M13 22h14M20 16v12" stroke="currentColor" stroke-width="1.8"/></svg>
+                </div>
+                <div class="item-details">
+                  <span class="item-name">Next-Gen Firewall</span>
+                  <span class="item-desc">Security & Threat Inspection</span>
+                </div>
+              </div>
+
+              <div class="palette-item" draggable="true" data-type="wireless_ap">
+                <div class="item-icon-wrapper" style="--accent-color: #8b5cf6;">
+                  <svg class="item-icon" viewBox="0 0 40 40"><circle cx="20" cy="26" r="3" fill="currentColor"/><path d="M12 18a11 11 0 0116 0M8 13a17 17 0 0124 0" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+                </div>
+                <div class="item-details">
+                  <span class="item-name">Wireless AP</span>
+                  <span class="item-desc">Wi-Fi 6E Access Point</span>
+                </div>
+              </div>
+
+              <div class="palette-item" draggable="true" data-type="internet_cloud">
+                <div class="item-icon-wrapper" style="--accent-color: #38bdf8;">
+                  <svg class="item-icon" viewBox="0 0 40 40"><path d="M10 26a7 7 0 01-1-14 9 9 0 0117-2 7 7 0 015 16H10z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>
+                </div>
+                <div class="item-details">
+                  <span class="item-name">Internet / WAN Cloud</span>
+                  <span class="item-desc">ISP Edge Connection</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category 2: Servers & Computing -->
+          <div class="library-category">
+            <div class="category-title">
+              <span>Servers & Cloud</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="category-items">
+              <div class="palette-item" draggable="true" data-type="server_web">
+                <div class="item-icon-wrapper" style="--accent-color: #10b981;">
+                  <svg class="item-icon" viewBox="0 0 40 40"><rect x="8" y="6" width="24" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="8" y="24" width="24" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="8" y1="20" x2="32" y2="20" stroke="currentColor" stroke-width="2"/><circle cx="14" cy="11" r="1.5" fill="currentColor"/><circle cx="14" cy="29" r="1.5" fill="currentColor"/></svg>
+                </div>
+                <div class="item-details">
+                  <span class="item-name">Web Server</span>
+                  <span class="item-desc">HTTP / Nginx / App Cluster</span>
+                </div>
+              </div>
+
+              <div class="palette-item" draggable="true" data-type="server_db">
+                <div class="item-icon-wrapper" style="--accent-color: #f59e0b;">
+                  <svg class="item-icon" viewBox="0 0 40 40"><ellipse cx="20" cy="10" rx="12" ry="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 10v10c0 2.2 5.4 4 12 4s12-1.8 12-4V10M8 20v10c0 2.2 5.4 4 12 4s12-1.8 12-4V20" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                </div>
+                <div class="item-details">
+                  <span class="item-name">Database Server</span>
+                  <span class="item-desc">SQL / Postgres / Mongo DB</span>
+                </div>
+              </div>
+
+              <div class="palette-item" draggable="true" data-type="nas_storage">
+                <div class="item-icon-wrapper" style="--accent-color: #84cc16;">
+                  <svg class="item-icon" viewBox="0 0 40 40"><rect x="6" y="8" width="28" height="24" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><line x1="6" y1="16" x2="34" y2="16" stroke="currentColor" stroke-width="1.8"/><line x1="6" y1="24" x2="34" y2="24" stroke="currentColor" stroke-width="1.8"/><circle cx="30" cy="12" r="1.5" fill="currentColor"/><circle cx="30" cy="20" r="1.5" fill="currentColor"/><circle cx="30" cy="28" r="1.5" fill="currentColor"/></svg>
+                </div>
+                <div class="item-details">
+                  <span class="item-name">NAS Storage</span>
+                  <span class="item-desc">iSCSI / SAN Storage Array</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category 3: User Endpoints -->
+          <div class="library-category">
+            <div class="category-title">
+              <span>Endpoints & Devices</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="category-items">
+              <div class="palette-item" draggable="true" data-type="pc_workstation">
+                <div class="item-icon-wrapper" style="--accent-color: #ec4899;">
+                  <svg class="item-icon" viewBox="0 0 40 40"><rect x="6" y="8" width="28" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 26v4h12v-4M10 30h20" stroke="currentColor" stroke-width="2"/></svg>
+                </div>
+                <div class="item-details">
+                  <span class="item-name">Desktop PC</span>
+                  <span class="item-desc">Client Workstation</span>
+                </div>
+              </div>
+
+              <div class="palette-item" draggable="true" data-type="laptop">
+                <div class="item-icon-wrapper" style="--accent-color: #f43f5e;">
+                  <svg class="item-icon" viewBox="0 0 40 40"><rect x="10" y="10" width="20" height="14" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 27h32a2 2 0 002-2v-1H2v1a2 2 0 002 2z" fill="currentColor"/></svg>
+                </div>
+                <div class="item-details">
+                  <span class="item-name">Laptop</span>
+                  <span class="item-desc">Mobile Client Device</span>
+                </div>
+              </div>
+
+              <div class="palette-item" draggable="true" data-type="ip_phone">
+                <div class="item-icon-wrapper" style="--accent-color: #a855f7;">
+                  <svg class="item-icon" viewBox="0 0 40 40"><rect x="12" y="6" width="16" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><rect x="15" y="9" width="10" height="7" rx="1" fill="currentColor" opacity="0.3"/><circle cx="16" cy="20" r="1" fill="currentColor"/><circle cx="20" cy="20" r="1" fill="currentColor"/><circle cx="24" cy="20" r="1" fill="currentColor"/></svg>
+                </div>
+                <div class="item-details">
+                  <span class="item-name">IP Phone</span>
+                  <span class="item-desc">VoIP Terminal</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </aside>
+
+      <!-- CENTER WORKSPACE: CANVAS & DIAGRAM -->
+      <main class="canvas-workspace" id="canvas-container">
+        
+        <!-- SVG Layer for Cable Connections -->
+        <svg id="canvas-svg" class="canvas-svg-layer">
+          <defs>
+            <!-- Custom Markers for Cable direction/arrows -->
+            <marker id="arrow-cat6" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6"/>
+            </marker>
+            <marker id="arrow-fiber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#10b981"/>
+            </marker>
+            <filter id="glow-effect" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+            </filter>
+          </defs>
+          <g id="svg-sites-group"></g>
+          <g id="svg-cables-group"></g>
+          <g id="svg-temp-cable-group"></g>
+          <g id="svg-particles-group"></g>
+        </svg>
+
+        <!-- HTML Layer for Interactive Nodes -->
+        <div id="canvas-nodes" class="canvas-nodes-layer"></div>
+
+        <!-- Cable Connection Helper Overlay (Visible during wiring mode) -->
+        <div id="wiring-banner" class="wiring-banner hidden">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <span><strong>Wiring Mode Active:</strong> Click on a source device port, then click target device port to connect cable. Press <kbd>ESC</kbd> to cancel.</span>
+        </div>
+
+        <!-- Floating Zoom & Map Controls -->
+        <div class="canvas-controls">
+          <button id="btn-zoom-in" class="control-btn" title="Zoom In">+</button>
+          <span id="zoom-level-text">100%</span>
+          <button id="btn-zoom-out" class="control-btn" title="Zoom Out">−</button>
+          <button id="btn-zoom-reset" class="control-btn" title="Reset View">1:1</button>
+        </div>
+
+        <!-- Interactive Minimap Widget -->
+        <div class="minimap-widget" id="minimap-container">
+          <canvas id="minimap-canvas" width="160" height="100"></canvas>
+          <div id="minimap-viewport" class="minimap-viewport"></div>
+        </div>
+
+      </main>
+
+      <!-- RIGHT SIDEBAR: INSPECTOR PANEL -->
+      <aside class="sidebar right-sidebar" id="inspector-sidebar">
+        <div class="sidebar-header">
+          <h3 id="inspector-title">Properties Inspector</h3>
+          <span class="selection-type-badge" id="selection-type-badge">No Selection</span>
+        </div>
+
+        <div class="inspector-scroll" id="inspector-content">
+          <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <p>Select a node, cable, or subnet zone to edit its parameters and IP configuration.</p>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- MODAL POPUPS -->
+    <!-- Template Selector Modal -->
+    <div class="modal-backdrop hidden" id="modal-templates">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h3>Load Network Architecture Template</h3>
+          <button class="modal-close" id="btn-close-templates">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="templates-grid">
+            <div class="template-card" data-template="enterprise_dmz">
+              <div class="card-badge">Enterprise</div>
+              <h4>Enterprise Dual-Homed Perimeter</h4>
+              <p>Redundant HA Firewalls, L3 Core Switch cluster, DMZ Web Server array, Internal Workstations & Database.</p>
+            </div>
+            <div class="template-card" data-template="spine_leaf">
+              <div class="card-badge datacenter">Datacenter</div>
+              <h4>Spine-Leaf Data Center Topology</h4>
+              <p>High-throughput Spine switches connected to dual Leaf switches with high-density compute server racks.</p>
+            </div>
+            <div class="template-card" data-template="branch_office">
+              <div class="card-badge branch">Branch Office</div>
+              <h4>Small Business Office Network</h4>
+              <p>Single Gateway Router, Wi-Fi 6 Access Point, IP Phones, Local NAS Storage, and Workstation PCs.</p>
+            </div>
+            <div class="template-card" data-template="hybrid_cloud">
+              <div class="card-badge cloud">Hybrid Cloud</div>
+              <h4>On-Premises to Cloud VPC Tunnel</h4>
+              <p>On-premises corporate network linked via IPsec VPN encrypted tunnel to AWS/Azure Cloud VPC subnets.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Packet Traffic Simulation Modal / Diagnostics -->
+    <div class="modal-backdrop hidden" id="modal-simulator">
+      <div class="modal-dialog medium">
+        <div class="modal-header">
+          <h3>Interactive Packet Traffic & ICMP Ping Simulator</h3>
+          <button class="modal-close" id="btn-close-simulator">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="sim-controls-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="sim-source-node">Source Host</label>
+                <select id="sim-source-node" class="form-control"></select>
+              </div>
+              <div class="form-group">
+                <label for="sim-target-node">Destination Host</label>
+                <select id="sim-target-node" class="form-control"></select>
+              </div>
+              <div class="form-group">
+                <label for="sim-protocol">Traffic Protocol</label>
+                <select id="sim-protocol" class="form-control">
+                  <option value="icmp">ICMP Ping Echo Request</option>
+                  <option value="http">HTTP GET Request (Port 80/443)</option>
+                  <option value="dns">DNS Query (UDP 53)</option>
+                </select>
+              </div>
+            </div>
+            <button id="btn-start-sim-run" class="btn primary">Start Path Trace & Simulation</button>
+          </div>
+
+          <div class="sim-results-panel" id="sim-results-panel">
+            <h4>Diagnostic Hop-by-Hop Execution Log</h4>
+            <div class="log-console" id="sim-log-console">
+              <div class="log-line info">Select source and destination nodes above and click "Start Path Trace".</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bill of Materials (BOM) & Inventory Modal -->
+    <div class="modal-backdrop hidden" id="modal-bom">
+      <div class="modal-dialog large">
+        <div class="modal-header">
+          <h3>Network Equipment Bill of Materials & IP Inventory</h3>
+          <button class="modal-close" id="btn-close-bom">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="bom-section">
+            <h4>Device Inventory Summary</h4>
+            <table class="bom-table" id="table-bom-devices">
+              <thead>
+                <tr>
+                  <th>Hostname</th>
+                  <th>Site Location</th>
+                  <th>Device Type</th>
+                  <th>IP Address</th>
+                  <th>Subnet Mask</th>
+                  <th>VLAN / Zone</th>
+                  <th>MAC Address</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="bom-section">
+            <h4>Cabling & Interconnects</h4>
+            <table class="bom-table" id="table-bom-cables">
+              <thead>
+                <tr>
+                  <th>Source Device & Port</th>
+                  <th>Target Device & Port</th>
+                  <th>Cable Media Type</th>
+                  <th>Link Speed</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="bom-section">
+            <h4>VLAN Segmentation & Membership Summary</h4>
+            <table class="bom-table" id="table-bom-vlans">
+              <thead>
+                <tr>
+                  <th>VLAN Tag</th>
+                  <th>Assigned Devices & Interfaces</th>
+                  <th>Switchport Modes</th>
+                  <th>Interface Count</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          
+          <button id="btn-copy-bom" class="btn secondary">Copy Table to Clipboard</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Multi-Select Alignment Toolbar -->
+    <div id="alignment-bar" class="alignment-bar hidden">
+      <span class="align-title"><strong id="align-count">0</strong> selected</span>
+      <div class="align-divider"></div>
+      <button class="align-btn" id="btn-align-left" title="Align Left Edges">⬅️ Left</button>
+      <button class="align-btn" id="btn-align-center-h" title="Align Horizontal Centers">↔️ Center</button>
+      <button class="align-btn" id="btn-align-right" title="Align Right Edges">➡️ Right</button>
+      <div class="align-divider"></div>
+      <button class="align-btn" id="btn-align-top" title="Align Top Edges">⬆️ Top</button>
+      <button class="align-btn" id="btn-align-center-v" title="Align Vertical Centers">↕️ Middle</button>
+      <button class="align-btn" id="btn-align-bottom" title="Align Bottom Edges">⬇️ Bottom</button>
+      <div class="align-divider"></div>
+      <select id="select-bulk-site" class="align-select" title="Reassign Selected Devices to Site Group">
+        <option value="" disabled selected>Move to Site...</option>
+      </select>
+      <button class="align-btn danger" id="btn-delete-selected" title="Delete All Selected Nodes">🗑️ Delete</button>
+    </div>
+
+    <!-- Modal: Site Manager -->
+    <div id="modal-site-manager" class="modal-backdrop hidden">
+      <div class="modal-dialog medium">
+        <div class="modal-header">
+          <h3>🏢 Site Region & Location Manager</h3>
+          <button class="modal-close" id="close-site-manager">&times;</button>
+        </div>
+        <div class="modal-body" style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; gap: 8px; align-items: center; background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 8px; border: 1px solid var(--bg-panel-border);">
+            <input type="text" id="input-new-site-name" class="prop-input" placeholder="New Site Name (e.g. Data Center West)" style="flex: 1;">
+            <input type="color" id="input-new-site-color" value="#0284c7" title="Choose Site Border Color" style="width: 36px; height: 36px; border: none; background: transparent; cursor: pointer;">
+            <button id="btn-add-site" class="btn primary">+ Create Site</button>
+          </div>
+
+          <div style="max-height: 320px; overflow-y: auto;">
+            <table class="bom-table" id="table-sites-list">
+              <thead>
+                <tr>
+                  <th>Color</th>
+                  <th>Site Name</th>
+                  <th>Assigned Devices</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="sites-tbody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer" style="padding: 12px 20px; border-top: 1px solid var(--bg-panel-border); display: flex; justify-content: flex-end;">
+          <button class="btn secondary modal-close-btn" id="btn-done-site-manager">Done / Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Context Menu for Nodes/Canvas -->
+    <div id="context-menu" class="context-menu hidden">
+      <div class="menu-item" id="ctx-inspect">Inspect / Edit Properties</div>
+      <div class="menu-item" id="ctx-duplicate">Duplicate Node</div>
+      <div class="menu-item" id="ctx-connect">Connect Cable From Here</div>
+      <div class="menu-divider"></div>
+      <div class="menu-item" id="ctx-site-manager">🏢 Site Region Manager...</div>
+      <div class="menu-divider"></div>
+      <div class="menu-item danger" id="ctx-delete">Delete Item (Del)</div>
+    </div>
+
+  </div>
+
+  <!-- Javascript Modules -->
+  <script type="module" src="js/devices.js"></script>
+  <script type="module" src="js/state.js"></script>
+  <script type="module" src="js/connections.js"></script>
+  <script type="module" src="js/canvas.js"></script>
+  <script type="module" src="js/inspector.js"></script>
+  <script type="module" src="js/simulator.js"></script>
+  <script type="module" src="js/templates.js"></script>
+  <script type="module" src="js/export.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

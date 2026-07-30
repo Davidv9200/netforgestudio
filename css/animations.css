@@ -1,0 +1,89 @@
+/* NetForge Studio - Keyframe Animations & Micro-Interactions */
+
+/* Cable Traffic Pulse Dots */
+@keyframes packet-dash {
+  to {
+    stroke-dashoffset: -30;
+  }
+}
+
+.cable-path.animating {
+  stroke-dasharray: 8 6;
+  animation: packet-dash 1.2s linear infinite;
+}
+
+/* Simulated Packet Pulse Circle traveling on SVG path */
+.packet-pulse-dot {
+  fill: #38bdf8;
+  filter: drop-shadow(0 0 6px #38bdf8);
+}
+
+.packet-pulse-dot.http {
+  fill: #10b981;
+  filter: drop-shadow(0 0 6px #10b981);
+}
+
+.packet-pulse-dot.dns {
+  fill: #f59e0b;
+  filter: drop-shadow(0 0 6px #f59e0b);
+}
+
+/* Button Pulse Glow */
+@keyframes button-glow-pulse {
+  0% {
+    box-shadow: 0 0 5px var(--primary-glow);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(59, 130, 246, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 5px var(--primary-glow);
+  }
+}
+
+.pulse-glow {
+  animation: button-glow-pulse 2s infinite;
+}
+
+/* Node Drag Transition */
+.network-node.dragging {
+  opacity: 0.85;
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 20px var(--primary-glow);
+  transition: none !important;
+}
+
+/* Log Console Text Fade-In */
+@keyframes log-fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.log-line {
+  animation: log-fade 0.2s ease-out;
+  padding: 4px 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.log-line.info { color: #38bdf8; }
+.log-line.success { color: #10b981; }
+.log-line.warn { color: #f59e0b; }
+.log-line.error { color: #ef4444; }
+
+.log-console {
+  background: #05080e;
+  border: 1px solid var(--bg-panel-border);
+  border-radius: 6px;
+  padding: 12px;
+  max-height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}

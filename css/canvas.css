@@ -1,0 +1,427 @@
+/* NetForge Studio - Canvas & Interactive Diagram Workspace */
+
+.canvas-workspace {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background-color: #070a11;
+  /* Grid pattern background */
+  background-image: 
+    radial-gradient(circle, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 24px 24px;
+  cursor: default;
+}
+
+.canvas-workspace.panning {
+  cursor: grab;
+}
+
+.canvas-workspace.panning:active {
+  cursor: grabbing;
+}
+
+.canvas-workspace.wiring-mode {
+  cursor: crosshair;
+}
+
+.canvas-svg-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.cable-path, .temp-cable-path {
+  pointer-events: stroke;
+}
+
+#svg-sites-group, .site-group-container, .site-group-container * {
+  pointer-events: none !important;
+}
+
+/* CABLE LINK PATHS */
+.cable-path {
+  fill: none;
+  stroke-width: 2.5px;
+  cursor: pointer;
+  transition: stroke 0.2s, stroke-width 0.2s;
+}
+
+.cable-path.cat6 {
+  stroke: #3b82f6;
+}
+
+.cable-path.fiber {
+  stroke: #10b981;
+}
+
+.cable-path.wireless {
+  stroke: #8b5cf6;
+  stroke-dasharray: 6 4;
+}
+
+.cable-path.vpn {
+  stroke: #f59e0b;
+  stroke-dasharray: 8 4;
+}
+
+.cable-path:hover {
+  stroke-width: 4.5px;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4));
+}
+
+.cable-path.selected {
+  stroke-width: 4px;
+  stroke: #38bdf8 !important;
+  filter: drop-shadow(0 0 8px #38bdf8);
+}
+
+.cable-label {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  fill: #94a3b8;
+  background: var(--bg-dark);
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.cable-port-label {
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  fill: #38bdf8;
+  stroke: #070a11;
+  stroke-width: 3px;
+  paint-order: stroke fill;
+  pointer-events: none;
+}
+
+/* TEMPORARY CABLE WIRING PATH */
+.temp-cable-path {
+  fill: none;
+  stroke: #38bdf8;
+  stroke-width: 2px;
+  stroke-dasharray: 4 4;
+  pointer-events: none;
+}
+
+/* SUBNET ZONE RECTANGLES */
+.subnet-zone-rect {
+  fill-opacity: 0.08;
+  stroke-width: 2px;
+  stroke-dasharray: 6 4;
+  rx: 8px;
+  cursor: pointer;
+  transition: fill-opacity 0.2s;
+}
+
+.subnet-zone-rect:hover {
+  fill-opacity: 0.15;
+}
+
+.subnet-zone-rect.selected {
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.4));
+}
+
+.zone-label-text {
+  font-size: 12px;
+  font-weight: 600;
+  fill: #e2e8f0;
+  pointer-events: none;
+}
+
+.zone-cidr-text {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  fill: #94a3b8;
+  pointer-events: none;
+}
+
+/* HTML NODE LAYER */
+.canvas-nodes-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* NETWORK DEVICE NODE */
+.network-node {
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  background: var(--bg-panel);
+  border: 1.5px solid var(--bg-panel-border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  cursor: move;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s;
+}
+
+.network-node:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 15px var(--primary-glow);
+  z-index: 30;
+}
+
+.network-node.selected {
+  border-color: #38bdf8;
+  border-width: 2px;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+  z-index: 40;
+}
+
+.node-icon-box {
+  width: 32px;
+  height: 32px;
+  color: var(--accent-color, var(--primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -2px;
+}
+
+.node-icon-box svg {
+  width: 100%;
+  height: 100%;
+}
+
+.node-hostname-inside {
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--font-main);
+  color: #f8fafc;
+  max-width: 64px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+  margin-top: 2px;
+  line-height: 1.1;
+  background: rgba(15, 23, 42, 0.7);
+  padding: 1px 4px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+}
+
+.node-vlan-tag {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 8.5px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: #38bdf8;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid #0284c7;
+  padding: 1px 5px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+  pointer-events: auto;
+  z-index: 45;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.node-vlan-tag:hover {
+  background: #0284c7;
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+/* CABLE MIDPOINT VLAN TAG BADGE */
+.cable-vlan-tag {
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.cable-vlan-tag rect {
+  filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.7));
+}
+
+.cable-vlan-tag text {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* PORT CONNECTION DOTS */
+.node-port-dot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--bg-dark);
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s, background-color 0.2s;
+  cursor: crosshair;
+  z-index: 50;
+  pointer-events: auto;
+}
+
+.network-node:hover .node-port-dot,
+.canvas-workspace.wiring-mode .node-port-dot {
+  opacity: 1;
+}
+
+.node-port-dot.occupied {
+  background: #10b981;
+  border-color: #059669;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+  opacity: 0.9;
+}
+
+.node-port-dot.occupied:hover {
+  transform: scale(1.3);
+  background: #ef4444;
+  border-color: #dc2626;
+  box-shadow: 0 0 10px #ef4444;
+  cursor: not-allowed;
+}
+
+.node-port-dot.top { top: -6px; left: calc(50% - 6px); }
+.node-port-dot.bottom { bottom: -6px; left: calc(50% - 6px); }
+.node-port-dot.left { left: -6px; top: calc(50% - 6px); }
+.node-port-dot.right { right: -6px; top: calc(50% - 6px); }
+
+/* STATUS BADGE ON NODE */
+.node-status-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  box-shadow: 0 0 6px var(--accent-green);
+}
+
+.node-status-badge.warning {
+  background: var(--accent-amber);
+  box-shadow: 0 0 6px var(--accent-amber);
+}
+
+.node-status-badge.offline {
+  background: var(--accent-red);
+  box-shadow: 0 0 6px var(--accent-red);
+}
+
+/* WIRING HELPER BANNER */
+.wiring-banner {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  padding: 10px 20px;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 20px var(--primary-glow);
+  z-index: 90;
+}
+
+.wiring-banner kbd {
+  background: var(--bg-card);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--bg-panel-border);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.wiring-banner.hidden {
+  display: none;
+}
+
+/* FLOATING ZOOM CONTROLS */
+.canvas-controls {
+  position: absolute;
+  bottom: 20px;
+  right: 190px;
+  display: flex;
+  align-items: center;
+  background: var(--bg-panel);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--bg-panel-border);
+  border-radius: 8px;
+  padding: 4px 8px;
+  gap: 6px;
+  z-index: 80;
+  box-shadow: var(--shadow-lg);
+}
+
+.control-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.control-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--primary);
+}
+
+#zoom-level-text {
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  min-width: 44px;
+  text-align: center;
+}
+
+/* MINIMAP WIDGET */
+.minimap-widget {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 160px;
+  height: 100px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid var(--bg-panel-border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  z-index: 80;
+}
+
+#minimap-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.minimap-viewport {
+  position: absolute;
+  border: 1.5px solid var(--primary);
+  background: rgba(59, 130, 246, 0.15);
+  border-radius: 2px;
+  pointer-events: none;
+}
