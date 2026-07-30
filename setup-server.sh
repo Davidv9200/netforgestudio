@@ -2,13 +2,13 @@
 # ==============================================================================
 # NetForge Studio — Server Setup & Docker Deployment (SSH Deploy Key Method)
 # Target OS: Ubuntu / Debian / Fedora / CentOS
-# Repository: https://github.com/YOUR_GITHUB_USER/netforgestudio.git
-# Usage: curl -sSL https://raw.githubusercontent.com/YOUR_GITHUB_USER/netforgestudio/main/setup-server.sh | bash
+# Repository: https://github.com/Davidv9200/netforgestudio.git
+# Usage: curl -sSL https://raw.githubusercontent.com/Davidv9200/netforgestudio/main/setup-server.sh | bash
 # ==============================================================================
 
 set -e
 
-GITHUB_USER="${GITHUB_USER:-YOUR_GITHUB_USER}"
+GITHUB_USER="${GITHUB_USER:-Davidv9200}"
 REPO_NAME="${REPO_NAME:-netforgestudio}"
 REPO_URL="https://github.com/${GITHUB_USER}/${REPO_NAME}.git"
 INSTALL_DIR="/opt/netforgestudio"

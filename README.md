@@ -46,7 +46,7 @@ For detailed step-by-step guides, refer to the **[Deployment Runbook & Knowledge
 Run the automated deployment script on your Linux VPS / server:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/netforgestudio/main/setup-server.sh | bash
+curl -sSL https://raw.githubusercontent.com/Davidv9200/netforgestudio/main/setup-server.sh | bash
 ```
 
 ### Option 2: Docker Container Deployment
